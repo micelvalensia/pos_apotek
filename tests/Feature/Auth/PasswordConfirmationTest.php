@@ -4,6 +4,7 @@ namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Route;
 use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
@@ -13,6 +14,10 @@ class PasswordConfirmationTest extends TestCase
 
     public function test_confirm_password_screen_can_be_rendered()
     {
+        if (! Route::has('password.confirm')) {
+            $this->markTestSkipped('Password confirmation feature is disabled.');
+        }
+
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)->get(route('password.confirm'));
@@ -26,6 +31,10 @@ class PasswordConfirmationTest extends TestCase
 
     public function test_password_confirmation_requires_authentication()
     {
+        if (! Route::has('password.confirm')) {
+            $this->markTestSkipped('Password confirmation feature is disabled.');
+        }
+
         $response = $this->get(route('password.confirm'));
 
         $response->assertRedirect(route('login'));

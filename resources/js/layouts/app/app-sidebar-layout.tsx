@@ -1,3 +1,4 @@
+import { AppBottomBar } from '@/components/app-bottombar';
 import { AppContent } from '@/components/app-content';
 import { AppShell } from '@/components/app-shell';
 import { AppSidebar } from '@/components/app-sidebar';
@@ -11,10 +12,16 @@ export default function AppSidebarLayout({
     return (
         <AppShell variant="sidebar">
             <AppSidebar />
-            <AppContent variant="sidebar" className="min-w-0 overflow-x-clip">
+            <AppContent
+                variant="sidebar"
+                className="bg-neutral min-w-0 overflow-x-clip pb-20 md:pb-0"
+            >
                 <AppSidebarHeader breadcrumbs={breadcrumbs} />
-                {children}
+                <div className="p-4">
+                    {children}
+                </div>
             </AppContent>
+            <AppBottomBar />
         </AppShell>
     );
 }

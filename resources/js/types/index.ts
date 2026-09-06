@@ -1,3 +1,9 @@
 export type * from './auth';
+export type * from './dashboard';
+export type * from './inventory';
 export type * from './navigation';
+export type * from './pos';
+export type * from './reports';
+export type * from './settings';
+export type * from './supplier';
 export type * from './ui';

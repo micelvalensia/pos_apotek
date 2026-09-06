@@ -25,7 +25,7 @@ export function NavUser() {
     }
 
     return (
-        <SidebarMenu>
+        <SidebarMenu className="rounded-lg border">
             <SidebarMenuItem>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>

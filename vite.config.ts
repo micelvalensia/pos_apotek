@@ -6,7 +6,7 @@ import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
 import { defineConfig, lazyPlugins } from 'vite-plus';
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
     plugins: lazyPlugins(() => [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.tsx'],
@@ -18,9 +18,13 @@ export default defineConfig({
             presets: [reactCompilerPreset()],
         }),
         tailwindcss(),
-        wayfinder({
-            formVariants: true,
-        }),
+        ...(command === 'serve'
+            ? [
+                  wayfinder({
+                      formVariants: true,
+                  }),
+              ]
+            : []),
     ]),
     server: {
         watch: {
@@ -68,4 +72,4 @@ export default defineConfig({
             entryPoint: 'resources/css/app.css',
         },
     },
-});
+}));

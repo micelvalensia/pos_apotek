@@ -15,12 +15,20 @@ export default function AuthSimpleLayout({
                     <div className="flex flex-col items-center gap-4">
                         <Link
                             href={home()}
-                            className="flex flex-col items-center gap-2 font-medium"
+                            className="text-tertiary mb-1 inline-flex items-center gap-1.5 self-start text-left text-sm font-medium transition-colors hover:text-slate-900"
                         >
-                            <div className="mb-1 flex h-9 w-9 items-center justify-center rounded-md">
-                                <AppLogoIcon className="size-9 fill-current text-[var(--foreground)] dark:text-white" />
-                            </div>
-                            <span className="sr-only">{title}</span>
+                            <svg
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                className="h-4 w-4"
+                            >
+                                <path
+                                    fillRule="evenodd"
+                                    d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 111.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
+                            Kembali pilih peran
                         </Link>
 
                         <div className="space-y-2 text-center">

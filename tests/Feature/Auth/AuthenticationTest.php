@@ -14,7 +14,8 @@ class AuthenticationTest extends TestCase
 
     public function test_login_screen_can_be_rendered()
     {
-        $response = $this->get(route('login'));
+        $this->withoutVite();
+        $response = $this->get(route('login.admin'));
 
         $response->assertOk();
     }
@@ -26,10 +27,11 @@ class AuthenticationTest extends TestCase
         $response = $this->post(route('login.store'), [
             'email' => $user->email,
             'password' => 'password',
+            'role' => $user->role->name,
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertRedirect($user->role->name === 'admin' ? '/admin/dashboard' : '/cashier/dashboard');
     }
 
     public function test_users_with_two_factor_enabled_are_redirected_to_two_factor_challenge()
@@ -43,9 +45,10 @@ class AuthenticationTest extends TestCase
 
         $user = User::factory()->withTwoFactor()->create();
 
-        $response = $this->post(route('login'), [
+        $response = $this->post(route('login.store'), [
             'email' => $user->email,
             'password' => 'password',
+            'role' => $user->role->name,
         ]);
 
         $response->assertRedirect(route('two-factor.login'));
@@ -60,6 +63,7 @@ class AuthenticationTest extends TestCase
         $this->post(route('login.store'), [
             'email' => $user->email,
             'password' => 'wrong-password',
+            'role' => $user->role->name,
         ]);
 
         $this->assertGuest();
