@@ -26,6 +26,8 @@ WORKDIR /app
 
 COPY composer.json composer.lock ./
 
+ENV COMPOSER_MAX_PARALLEL_HTTP=1
+
 RUN composer install \
     --no-dev \
     --no-interaction \

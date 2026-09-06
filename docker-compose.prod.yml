@@ -40,7 +40,7 @@ services:
     container_name: pos_apotek_prod_web
     restart: always
     ports:
-      - '8080:80'
+      - '${APP_PORT:-8000}:80'
     volumes:
       - storage_data:/var/www/html/storage:ro
     depends_on:
@@ -52,6 +52,8 @@ services:
     image: mysql:8.0
     container_name: pos_apotek_prod_db
     restart: always
+    ports:
+      - '${FORWARD_DB_PORT:-3307}:3306'
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-${DB_PASSWORD:-pos123}}
       MYSQL_ROOT_HOST: '%'
