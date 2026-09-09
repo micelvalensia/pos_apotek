@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {
     Boxes,
+    Check,
     Package,
     Plus,
     Search,
@@ -10,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { formatCurrency } from '@/lib/utils';
+import { cn, formatCurrency } from '@/lib/utils';
 import type { PosProduct, PosProductUnit } from '@/types';
 
 interface PosCatalogGridProps {
@@ -20,6 +21,23 @@ interface PosCatalogGridProps {
 
 export function PosCatalogGrid({ catalog, onAddToCart }: PosCatalogGridProps) {
     const [search, setSearch] = React.useState('');
+    const [addedId, setAddedId] = React.useState<number | null>(null);
+    const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
+    const handleAddToCart = (product: PosProduct, unit?: PosProductUnit) => {
+        onAddToCart(product, unit);
+        setAddedId(product.id);
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(() => {
+            setAddedId((curr) => (curr === product.id ? null : curr));
+        }, 700);
+    };
+
+    React.useEffect(() => {
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        };
+    }, []);
 
     const filteredCatalog = React.useMemo(() => {
         if (!search.trim()) return catalog;
@@ -60,64 +78,81 @@ export function PosCatalogGrid({ catalog, onAddToCart }: PosCatalogGridProps) {
                         const isOutOfStock = product.available_stock <= 0;
                         const defaultUnit = product.units[0];
 
+                        const isJustAdded = addedId === product.id;
+
                         return (
                             <Card
                                 key={product.id}
-                                className={`border-slate-200/80 dark:border-neutral-800 shadow-xs transition-all bg-white dark:bg-neutral-900 ${
-                                    isOutOfStock
-                                        ? 'opacity-60 bg-slate-50/50'
-                                        : 'hover:border-teal-400 hover:shadow-sm'
-                                }`}
+                                className={cn(
+                                    'border-slate-200/80 dark:border-neutral-800 shadow-xs transition-all duration-200 bg-white dark:bg-neutral-900',
+                                    isOutOfStock && 'opacity-60 bg-slate-50/50',
+                                    !isOutOfStock && !isJustAdded && 'hover:border-teal-400 hover:shadow-sm active:scale-[0.99]',
+                                    isJustAdded && 'border-primary ring-2 ring-primary/40 shadow-md scale-[1.02] bg-teal-50/20 dark:bg-teal-950/20'
+                                )}
                             >
                                 <CardContent className="p-3 space-y-2.5">
                                     <div className="flex items-start justify-between gap-2">
                                         <div className="min-w-0 flex-1">
                                             <p className="font-bold text-slate-900 dark:text-white text-xs truncate" title={product.name}>
-                                                {product.name}
-                                            </p>
-                                            <p className="font-mono text-[10px] text-slate-400 truncate">
-                                                {product.barcode ? `Barcode: ${product.barcode}` : 'Non-Barcode'}
-                                            </p>
-                                        </div>
+                                                 {product.name}
+                                             </p>
+                                             <p className="font-mono text-[10px] text-slate-400 truncate">
+                                                 {product.barcode ? `Barcode: ${product.barcode}` : 'Non-Barcode'}
+                                             </p>
+                                         </div>
 
-                                        <Badge
-                                            variant={isOutOfStock ? 'destructive' : 'secondary'}
-                                            className={`text-[10px] shrink-0 font-mono ${
-                                                isOutOfStock
-                                                    ? 'bg-red-50 text-red-700 border-red-200'
-                                                    : product.available_stock <= 10
-                                                    ? 'bg-amber-50 text-amber-800 border-amber-200'
-                                                    : 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                            }`}
-                                        >
-                                            Stok: {product.available_stock} {product.base_unit_name}
-                                        </Badge>
-                                    </div>
+                                         <Badge
+                                             variant={isOutOfStock ? 'destructive' : 'secondary'}
+                                             className={`text-[10px] shrink-0 font-mono ${
+                                                 isOutOfStock
+                                                     ? 'bg-red-50 text-red-700 border-red-200'
+                                                     : product.available_stock <= 10
+                                                     ? 'bg-amber-50 text-amber-800 border-amber-200'
+                                                     : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                             }`}
+                                         >
+                                             Stok: {product.available_stock} {product.base_unit_name}
+                                         </Badge>
+                                     </div>
 
-                                    {/* Units & Quick Add */}
-                                    <div className="pt-2 border-t border-slate-100 dark:border-neutral-800 flex items-center justify-between gap-2">
-                                        <div>
-                                            <span className="text-[10px] text-slate-400 block">
-                                                {defaultUnit?.unit_name || 'Satuan'}:
-                                            </span>
-                                            <span className="font-mono text-xs font-bold text-primary dark:text-teal-400">
-                                                {formatCurrency(defaultUnit?.selling_price || 0)}
-                                            </span>
-                                        </div>
+                                     {/* Units & Quick Add */}
+                                     <div className="pt-2 border-t border-slate-100 dark:border-neutral-800 flex items-center justify-between gap-2">
+                                         <div>
+                                             <span className="text-[10px] text-slate-400 block">
+                                                 {defaultUnit?.unit_name || 'Satuan'}:
+                                             </span>
+                                             <span className="font-mono text-xs font-bold text-primary dark:text-teal-400">
+                                                 {formatCurrency(defaultUnit?.selling_price || 0)}
+                                             </span>
+                                         </div>
 
-                                        <Button
-                                            type="button"
-                                            size="sm"
-                                            disabled={isOutOfStock}
-                                            onClick={() => onAddToCart(product, defaultUnit)}
-                                            className="h-7 px-2.5 text-xs bg-teal-50 text-primary hover:bg-primary hover:text-white dark:bg-teal-950/60 dark:text-teal-300 border border-teal-200 dark:border-teal-800 transition-colors cursor-pointer gap-1"
-                                        >
-                                            <Plus className="size-3" />
-                                            <span>Tambah</span>
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                         <Button
+                                             type="button"
+                                             size="sm"
+                                             disabled={isOutOfStock}
+                                             onClick={() => handleAddToCart(product, defaultUnit)}
+                                             className={cn(
+                                                 'h-7 px-2.5 text-xs font-semibold transition-all duration-150 cursor-pointer gap-1 active:scale-85 select-none',
+                                                 isJustAdded
+                                                     ? 'bg-primary text-white border-primary shadow-xs scale-105'
+                                                     : 'bg-teal-50 text-primary hover:bg-primary hover:text-white dark:bg-teal-950/60 dark:text-teal-300 border border-teal-200 dark:border-teal-800'
+                                             )}
+                                         >
+                                             {isJustAdded ? (
+                                                 <>
+                                                     <Check className="size-3.5 stroke-[2.5] animate-in zoom-in-50 duration-150" />
+                                                     <span className="animate-in fade-in duration-150">+1 Masuk</span>
+                                                 </>
+                                             ) : (
+                                                 <>
+                                                     <Plus className="size-3 stroke-[2.5]" />
+                                                     <span>Tambah</span>
+                                                 </>
+                                             )}
+                                         </Button>
+                                     </div>
+                                 </CardContent>
+                             </Card>
                         );
                     })
                 ) : (

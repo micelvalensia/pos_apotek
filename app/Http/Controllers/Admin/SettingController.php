@@ -25,6 +25,8 @@ class SettingController extends Controller
             'tax' => [
                 'percentage' => $this->settingService->getTaxPercentage(),
                 'is_active' => $this->settingService->isTaxActive(),
+                'tax_percentage' => (string) $this->settingService->getTaxPercentage(),
+                'tax_is_active' => $this->settingService->isTaxActive(),
             ],
             'store' => $this->settingService->getStoreInfo(),
         ]);

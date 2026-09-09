@@ -49,7 +49,7 @@ export const adminNav: NavItem[] = [
         icon: Users,
     },
     {
-        title: 'Settings',
+        title: 'Pengaturan Apotek',
         href: '/admin/settings',
         icon: Sliders,
     },

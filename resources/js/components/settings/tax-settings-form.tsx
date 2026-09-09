@@ -16,6 +16,9 @@ interface TaxSettingsFormProps {
 }
 
 export function TaxSettingsForm({ tax }: TaxSettingsFormProps) {
+    const initialPercentage = String(tax.tax_percentage ?? tax.percentage ?? '11.00');
+    const initialIsActive = Boolean(tax.tax_is_active ?? tax.is_active);
+
     const {
         data,
         setData,
@@ -24,9 +27,16 @@ export function TaxSettingsForm({ tax }: TaxSettingsFormProps) {
         errors,
         recentlySuccessful,
     } = useForm({
-        tax_percentage: tax.tax_percentage || '11.00',
-        tax_is_active: Boolean(tax.tax_is_active),
+        tax_percentage: initialPercentage,
+        tax_is_active: initialIsActive,
     });
+
+    React.useEffect(() => {
+        setData({
+            tax_percentage: String(tax.tax_percentage ?? tax.percentage ?? '11.00'),
+            tax_is_active: Boolean(tax.tax_is_active ?? tax.is_active),
+        });
+    }, [tax.tax_percentage, tax.percentage, tax.tax_is_active, tax.is_active]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

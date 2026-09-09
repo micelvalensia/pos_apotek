@@ -4,8 +4,8 @@ import {
     LogOut,
     Menu,
     Palette,
-    Settings,
     Shield,
+    User,
 } from 'lucide-react';
 import * as React from 'react';
 import { adminNav, cashierNav } from '@/components/app-sidebar';
@@ -171,8 +171,8 @@ export function AppBottomBar() {
                             className="flex items-center justify-between rounded-lg p-2.5 text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-neutral-800 transition-colors"
                         >
                             <div className="flex items-center gap-3">
-                                <Settings className="size-5 text-slate-500" />
-                                <span>Settings</span>
+                                <User className="size-5 text-slate-500" />
+                                <span>Profile</span>
                             </div>
                             <ChevronRight className="size-4 text-slate-400" />
                         </Link>

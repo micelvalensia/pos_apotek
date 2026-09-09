@@ -14,12 +14,14 @@ import {
     User as UserIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 import { PosBarcodeScanner } from '@/components/pos/pos-barcode-scanner';
 import { PosCartPanel } from '@/components/pos/pos-cart-panel';
 import { PosCatalogGrid } from '@/components/pos/pos-catalog-grid';
 import { PosCheckoutModal } from '@/components/pos/pos-checkout-modal';
 import { PosReceiptModal } from '@/components/pos/pos-receipt-modal';
 import { usePosCart } from '@/hooks/use-pos-cart';
+import { formatCurrency } from '@/lib/utils';
 import type {
     PosProduct,
     SaleReceipt,
@@ -143,7 +145,7 @@ export default function PosIndex({ catalog, store, tax }: PosIndexProps) {
                     </div>
 
                     {/* Right: Cart & Calculation Panel (5 cols) */}
-                    <div className="lg:col-span-5 sticky top-4">
+                    <div id="pos-cart-panel" className="lg:col-span-5 sticky top-4">
                         <PosCartPanel
                             cart={cart}
                             subtotal={subtotal}
@@ -160,6 +162,45 @@ export default function PosIndex({ catalog, store, tax }: PosIndexProps) {
                         />
                     </div>
                 </div>
+
+                {/* Mobile Floating Cart Summary Bar */}
+                {totalItemsCount > 0 && (
+                    <div className="lg:hidden fixed bottom-20 inset-x-3 z-30 animate-in slide-in-from-bottom-4 duration-200">
+                        <div className="flex items-center justify-between gap-3 bg-slate-900/95 dark:bg-neutral-800/95 backdrop-blur-md text-white p-2.5 px-3.5 rounded-2xl shadow-xl border border-slate-700/50">
+                            <div className="flex items-center gap-2.5 min-w-0">
+                                <div className="relative flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-xs">
+                                    <ShoppingCart className="size-4" />
+                                    <span
+                                        key={totalItemsCount}
+                                        className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-white shadow-xs animate-in zoom-in-75 duration-150"
+                                    >
+                                        {totalItemsCount}
+                                    </span>
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-[10px] text-slate-400 leading-tight">Keranjang Belanja</p>
+                                    <p className="font-mono text-xs font-bold text-white truncate">
+                                        {formatCurrency(grandTotal)}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <Button
+                                type="button"
+                                size="sm"
+                                onClick={() => {
+                                    const cartElem = document.getElementById('pos-cart-panel');
+                                    if (cartElem) {
+                                        cartElem.scrollIntoView({ behavior: 'smooth' });
+                                    }
+                                }}
+                                className="bg-primary hover:bg-primary/90 text-white text-xs font-semibold h-8 px-3 rounded-xl shadow-xs shrink-0 cursor-pointer active:scale-95 transition-transform"
+                            >
+                                Lihat Keranjang ↓
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Payment / Checkout Modal */}
