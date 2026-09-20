@@ -47,7 +47,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::middleware('role:cashier')->group(function () {
-        Route::get('cashier/dashboard', fn () => redirect()->route('pos.index'))
+        Route::get('cashier/dashboard', fn() => redirect()->route('pos.index'))
             ->name('cashier.dashboard');
     });
 });
@@ -60,7 +60,7 @@ Route::get('/login-cashier', function () {
     return Inertia::render('auth/login-cashier');
 })->name('login.cashier');
 
-Route::get('/login', fn () => redirect()->route('login.admin'))->name('login');
+Route::get('/login', fn() => redirect()->route('login.admin'))->name('login');
 Route::get('/dashboard', function (Request $request) {
     if ($request->user()?->role?->name === 'cashier') {
         return redirect()->route('pos.index');
@@ -69,4 +69,17 @@ Route::get('/dashboard', function (Request $request) {
     return redirect()->route('admin.dashboard');
 })->name('dashboard');
 
-require __DIR__.'/settings.php';
+Route::get('/debug-proxy', function (\Illuminate\Http\Request $request) {
+    return response()->json([
+        'scheme' => $request->getScheme(),
+        'secure' => $request->isSecure(),
+        'host' => $request->getHost(),
+        'url' => $request->fullUrl(),
+        'x_forwarded_proto' => $request->header('X-Forwarded-Proto'),
+        'x_forwarded_host' => $request->header('X-Forwarded-Host'),
+        'x_forwarded_port' => $request->header('X-Forwarded-Port'),
+        'cf_visitor' => $request->header('CF-Visitor'),
+    ]);
+});
+
+require __DIR__ . '/settings.php';
